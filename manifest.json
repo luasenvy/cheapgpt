@@ -6,7 +6,7 @@
   "options_page": "options.html",
   "action": {
     "default_popup": "index.html",
-    "default_icon": "public/icon.png"
+    "default_icon": "icon.png"
   },
   "permitssions": [
     "storage"
