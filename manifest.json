@@ -1,0 +1,14 @@
+{
+  "name": "CheapGPT",
+  "description": "Chrome Extension for Using ChatGPT API",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "options_page": "options.html",
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": "public/icon.png"
+  },
+  "permitssions": [
+    "storage"
+  ]
+}
