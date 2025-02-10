@@ -3,12 +3,12 @@
   "description": "Chrome Extension for Using ChatGPT API",
   "version": "1.0.0",
   "manifest_version": 3,
-  "options_page": "options.html",
+  "options_page": "dist/options.html",
   "action": {
-    "default_popup": "index.html",
+    "default_popup": "dist/index.html",
     "default_icon": "icon.png"
   },
-  "permitssions": [
+  "permissions": [
     "storage"
   ]
 }

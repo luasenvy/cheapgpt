@@ -1,23 +1,20 @@
+import "@/styles/tailwind.css";
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import DefaultLayout from "@/layouts/DefaultLayout";
+import { Toaster } from "sonner";
+
+import { ChatGPT } from "@/components/ChatGPT";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <DefaultLayout>
-      <div className="mx-auto flex h-full max-w-4xl flex-col px-6 lg:px-8">
-        <div className="my-auto">
-          <h1 className="text-balance break-keep text-center text-6xl font-semibold tracking-tight text-foreground sm:text-7xl">
-            Video{" "}
-            <span className="bg-gradient-to-r from-[#D247BF] to-primary bg-clip-text px-2 text-transparent">
-              Conference
-            </span>
-          </h1>
+    <div className="flex h-full w-full flex-col space-y-2 p-2">
+      <main className="flex h-full w-full flex-col">
+        <ChatGPT />
+      </main>
 
-          <div className="mx-auto my-16 flex w-full max-w-screen-sm space-x-1"></div>
-        </div>
-      </div>
-    </DefaultLayout>
+      <Toaster />
+    </div>
   </React.StrictMode>
 );
