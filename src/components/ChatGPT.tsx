@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import type { Message } from "@/components/MessagePanel";
 import { MessagePanel } from "@/components/MessagePanel";
+import { ModelSelect } from "@/components/ModelSelect";
 import type { SearchBarRef } from "@/components/SearchBar";
 import { SearchBar } from "@/components/SearchBar";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   const searchBarRef = useRef<SearchBarRef>(null);
 
   const [text, setText] = useState<string>("");
+  const [model, setModel] = useState<string>("gpt-4o");
   const [isTalking, setIsTalking] = useState<boolean>(false);
 
   const isChattable = useMemo(
@@ -46,7 +48,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
 
     setIsTalking(true);
     const stream = await openaiRef.current!.chat.completions.create({
-      model: "gpt-4o",
+      model,
       messages: context.concat(message),
       stream: true,
     });
@@ -107,6 +109,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
 
   return (
     <div className={cn("flex h-full w-full flex-col space-y-2", className)} {...props}>
+      {isChattable && <ModelSelect className="p-2 pb-0" model={model} onModelSelect={setModel} />}
       <MessagePanel
         messages={messagesRef.current}
         className="h-full overflow-auto p-2"
