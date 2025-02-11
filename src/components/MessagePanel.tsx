@@ -35,7 +35,7 @@ export function MessagePanel({ messages, className, thinking, ...props }: Messag
       const ul = ulRef.current!;
 
       const { clientHeight, scrollTop, scrollHeight } = ul;
-      if (clientHeight + scrollTop + 40 >= scrollHeight) ul.scrollTo(0, scrollHeight);
+      if (clientHeight + scrollTop + 60 >= scrollHeight) ul.scrollTo(0, scrollHeight);
     });
 
     mutationObserver.observe(ulRef.current, {

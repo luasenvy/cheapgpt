@@ -4,6 +4,7 @@ import { forwardRef, useImperativeHandle, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 interface SearchBarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -30,7 +31,7 @@ export const SearchBar = forwardRef(function (
   }: SearchBarProps,
   ref: React.Ref<SearchBarRef>
 ) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   useImperativeHandle(ref, () => ({
     focus: () => {
       inputRef.current?.focus();
@@ -39,14 +40,14 @@ export const SearchBar = forwardRef(function (
 
   return (
     <div className={cn("flex items-center space-x-2", className)} {...props}>
-      <Input
+      <Textarea
         ref={inputRef}
         placeholder="Type a message..."
-        className="w-full text-xs"
+        className="w-full resize-none text-xs"
         disabled={disabled || talking}
         value={text}
         onKeyDown={(e) => {
-          if ("Enter" === e.key) {
+          if ("Enter" === e.key && !e.shiftKey) {
             e.preventDefault();
             handleChat(text);
           }
