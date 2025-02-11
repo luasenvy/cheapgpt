@@ -31,12 +31,13 @@ export function MessagePanel({ messages, className, thinking, ...props }: Messag
   useEffect(() => {
     if (!ulRef.current) return;
 
-    // MutationObserver 인스턴스를 생성하고, 설정 객체를 전달합니다.
-    const mutationObserver = new MutationObserver(() =>
-      ulRef.current!.scrollTo(0, ulRef.current!.scrollHeight)
-    );
+    const mutationObserver = new MutationObserver(() => {
+      const ul = ulRef.current!;
 
-    // 대상 요소에 대한 감시를 시작합니다.
+      const { clientHeight, scrollTop, scrollHeight } = ul;
+      if (clientHeight + scrollTop + 40 >= scrollHeight) ul.scrollTo(0, scrollHeight);
+    });
+
     mutationObserver.observe(ulRef.current, {
       childList: true,
       subtree: true,
