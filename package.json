@@ -1,12 +1,13 @@
 {
   "name": "chapgpt",
   "description": "Chrome Extension for Using ChatGPT API",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "package": "vite build && zip -r cheapgpt.zip dist/ manifest.json icon.png",
     "prepare": "husky"
   },
   "devDependencies": {
