@@ -1,0 +1,35 @@
+.prose {
+  p {
+    @apply m-0 mb-4 first-letter:ml-4 text-sm;
+
+    a {
+      @apply font-semibold no-underline hover:underline text-sky-500 hover:text-sky-600;
+    }
+  }
+
+  blockquote {
+    p {
+      @apply first-letter:ml-0 text-sm;
+    }
+  }
+
+  em {
+    @apply text-secondary-foreground;
+  }
+
+  img {
+    @apply bg-card m-0;
+  }
+
+  strong {
+    @apply bg-gradient-to-r from-[#d247bf] to-primary text-transparent bg-clip-text decoration-clone;
+  }
+
+  code:not(.hljs) {
+    @apply font-mono mx-0.5 px-1.5 py-0.5 rounded-sm border;
+
+    &:before, &:after {
+      @apply hidden;
+    }
+  }
+}
