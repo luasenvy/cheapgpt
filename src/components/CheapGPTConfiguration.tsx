@@ -19,11 +19,14 @@ export function CheapGPTConfiguration() {
   };
 
   useEffect(() => {
-    chrome.storage.sync.get({ organization, project, apiKey }, ({ org, prj, apiKey }) => {
-      setOrganization(org);
-      setProject(prj);
-      setApiKey(apiKey);
-    });
+    chrome.storage.sync.get(
+      { organization, project, apiKey },
+      ({ organization, project, apiKey }) => {
+        setOrganization(organization);
+        setProject(project);
+        setApiKey(apiKey);
+      }
+    );
   }, []);
 
   return (
