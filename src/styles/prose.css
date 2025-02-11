@@ -9,7 +9,13 @@
 
   blockquote {
     p {
-      @apply first-letter:ml-0 text-sm;
+      @apply first-letter:ml-0;
+    }
+  }
+
+  li {
+    &> p {
+      @apply first-letter:ml-0;
     }
   }
 

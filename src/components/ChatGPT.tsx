@@ -5,6 +5,8 @@ import { toast } from "sonner";
 
 import type { Message } from "@/components/MessagePanel";
 import { MessagePanel } from "@/components/MessagePanel";
+import type { Model } from "@/components/ModelSelect";
+import { model as modelEnum } from "@/components/ModelSelect";
 import { ModelSelect } from "@/components/ModelSelect";
 import type { SearchBarRef } from "@/components/SearchBar";
 import { SearchBar } from "@/components/SearchBar";
@@ -26,7 +28,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   const searchBarRef = useRef<SearchBarRef>(null);
 
   const [text, setText] = useState<string>("");
-  const [model, setModel] = useState<string>("gpt-4o");
+  const [model, setModel] = useState<Model>(modelEnum["gpt-4o-mini"]);
   const [isTalking, setIsTalking] = useState<boolean>(false);
 
   const isChattable = useMemo(

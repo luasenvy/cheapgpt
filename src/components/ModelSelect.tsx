@@ -6,9 +6,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+export const model = {
+  "gpt-4o": "gpt-4o",
+  "gpt-4o-mini": "gpt-4o-mini",
+  "o1-preview": "o1-preview",
+} as const;
+
+export type Model = (typeof model)[keyof typeof model];
+
 export interface ModelSelectProps extends React.HTMLAttributes<HTMLDivElement> {
-  model: string;
-  onModelSelect: (value: string) => void;
+  model: Model;
+  onModelSelect: (value: Model) => void;
 }
 
 export function ModelSelect({
