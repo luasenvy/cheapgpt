@@ -93,7 +93,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
           messagesRef.current = [
             {
               role: "assistant",
-              content: "Please configure your OpenAI API first. 🫠",
+              content: "**Please configure your OpenAI API first.** 🫠",
             },
           ];
           setMessagesCount((prev) => prev + 1);
