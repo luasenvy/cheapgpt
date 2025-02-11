@@ -21,7 +21,7 @@ interface MessagePanelProps extends React.HTMLAttributes<HTMLUListElement> {
 }
 
 const userBalloon =
-  "relative rounded-lg bg-teal-300/30 px-2 py-1 after:absolute after:left-full after:top-1/2 after:-translate-y-1/2 after:border-b-4 after:border-l-4 after:border-t-4 after:border-b-transparent after:border-l-teal-300/30 after:border-t-transparent [&>blockquote>p]:first-letter:!ml-0 [&>p:last-child]:!mb-0 [&>p]:first-letter:!ml-0 mt-4";
+  "relative rounded-lg bg-teal-200/20 px-2 py-1 after:absolute after:left-full after:top-1/2 after:-translate-y-1/2 after:border-b-4 after:border-l-4 after:border-t-4 after:border-b-transparent after:border-l-teal-200/20 after:border-t-transparent [&>blockquote>p]:first-letter:!ml-0 [&>p:last-child]:!mb-0 [&>p]:first-letter:!ml-0 mt-4";
 
 export function MessagePanel({ messages, className, thinking, ...props }: MessagePanelProps) {
   const ulRef = useRef<HTMLUListElement>(null);
