@@ -79,7 +79,8 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
         setProject(project);
         setApiKey(apiKey);
 
-        if (Boolean(organization) && Boolean(project) && Boolean(apiKey)) {
+        const isChattable = Boolean(organization) && Boolean(project) && Boolean(apiKey);
+        if (isChattable) {
           openaiRef.current = new OpenAI({
             organization,
             project,
@@ -88,6 +89,13 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
           });
 
           searchBarRef.current?.focus();
+        } else {
+          messagesRef.current = [
+            {
+              role: "assistant",
+              content: "Please configure your OpenAI API first.",
+            },
+          ];
         }
       }
     );
