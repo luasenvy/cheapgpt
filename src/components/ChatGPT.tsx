@@ -42,7 +42,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       role: "assistant",
       content: "",
     });
-    setMessagesCount((count) => count + 1);
+    setMessagesCount((prev) => prev + 1);
 
     setIsTalking(true);
     const stream = await openaiRef.current!.chat.completions.create({
@@ -61,7 +61,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
         role: lastRole,
         content: lastMessage + (chunk.choices[0]?.delta?.content || ""),
       });
-      setMessagesCount((count) => count + 1);
+      setMessagesCount((prev) => prev + 1);
     }
 
     setIsTalking(false);
@@ -96,6 +96,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
               content: "Please configure your OpenAI API first.",
             },
           ];
+          setMessagesCount((prev) => prev + 1);
         }
       }
     );
