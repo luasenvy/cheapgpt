@@ -28,6 +28,7 @@ const defaultMessage: ChatCompletionMessageParam = {
   role: "assistant",
   content: "How may I assist you?",
 };
+
 export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   const [status, setStatus] = useState<Status>(statusEnum.idle);
   const [apiKey, setApiKey] = useState<string>("");
@@ -103,7 +104,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       setApiKey(apiKey);
       setModel(model);
 
-      messagesRef.current = messages ?? [defaultMessage];
+      messagesRef.current = messages?.length ? messages : [defaultMessage];
       setMessagesCount((prev) => prev + 1);
 
       if (apiKey) {
