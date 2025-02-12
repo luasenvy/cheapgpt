@@ -5,6 +5,8 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 export function CheapGPTConfiguration() {
   const [organization, setOrganization] = useState<string>("");
@@ -30,28 +32,38 @@ export function CheapGPTConfiguration() {
   }, []);
 
   return (
-    <div className="flex flex-col space-y-2">
-      <Input
-        placeholder="Open AI Organization ID"
-        value={organization}
-        onInput={(e) => setOrganization(e.currentTarget.value)}
-      />
+    <div className="flex flex-col space-y-4">
+      <div className="flex items-center space-x-2">
+        <Label className="w-1/3 text-nowrap">Organization ID</Label>
+        <Input
+          placeholder="Organization ID"
+          value={organization}
+          onInput={(e) => setOrganization(e.currentTarget.value)}
+        />
+      </div>
 
-      <Input
-        placeholder="Open AI Project ID"
-        value={project}
-        onInput={(e) => setProject(e.currentTarget.value)}
-      />
+      <div className="flex items-center space-x-2">
+        <Label className="w-1/3 text-nowrap">Project ID</Label>
+        <Input
+          placeholder="Project ID"
+          value={project}
+          onInput={(e) => setProject(e.currentTarget.value)}
+        />
+      </div>
 
-      <Input
-        placeholder="Open AI API Key"
-        value={apiKey}
-        onInput={(e) => setApiKey(e.currentTarget.value)}
-      />
+      <div className="flex items-center space-x-2">
+        <Label className="w-1/3 text-nowrap">API Key</Label>
+        <Textarea
+          placeholder="API Key"
+          className="h-28 resize-none"
+          value={apiKey}
+          onInput={(e) => setApiKey(e.currentTarget.value)}
+        />
+      </div>
 
       <Button
-        className="ml-auto bg-blue-500 hover:bg-blue-600"
-        variant="default"
+        className="ml-auto border-primary text-primary hover:bg-primary hover:text-white"
+        variant="outline"
         size="icon"
         onClick={handleClickSaveConfiguration}
         disabled={!Boolean(organization) || !Boolean(project) || !Boolean(apiKey)}

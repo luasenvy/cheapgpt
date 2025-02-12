@@ -3,8 +3,8 @@ import { ArrowUp, LoaderCircle } from "lucide-react";
 import { forwardRef, useImperativeHandle, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 interface SearchBarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -55,15 +55,24 @@ export const SearchBar = forwardRef(function (
         onInput={(e) => handleInputMessage(e.currentTarget.value)}
       />
 
-      <Button
-        size="icon"
-        variant="outline"
-        disabled={disabled || talking}
-        className="size-8 flex-shrink-0 rounded-full"
-        onClick={() => handleChat(text)}
-      >
-        {talking ? <LoaderCircle className="animate-spin" /> : <ArrowUp />}
-      </Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <Button
+              size="icon"
+              variant="outline"
+              disabled={!text || disabled || talking}
+              className="size-8 flex-shrink-0 rounded-full"
+              onClick={() => handleChat(text)}
+            >
+              {talking ? <LoaderCircle className="animate-spin" /> : <ArrowUp />}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Chat</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 });

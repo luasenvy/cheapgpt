@@ -1,3 +1,4 @@
+import { TrendingUp } from "lucide-react";
 import OpenAI from "openai";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -10,6 +11,8 @@ import { model as modelEnum } from "@/components/ModelSelect";
 import { ModelSelect } from "@/components/ModelSelect";
 import type { SearchBarRef } from "@/components/SearchBar";
 import { SearchBar } from "@/components/SearchBar";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
@@ -39,7 +42,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   const handleChat = async () => {
     if (!isChattable) return toast.error("Please Configure first.");
 
-    const context = messagesRef.current.slice(1);
+    const context = messagesRef.current.slice(1).slice(-6);
     const message: Message = { role: "user", content: text };
 
     messagesRef.current = Array.from(messagesRef.current).concat(message, {
@@ -111,12 +114,31 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
 
   return (
     <div className={cn("flex h-full w-full flex-col space-y-2", className)} {...props}>
-      {isChattable && <ModelSelect className="p-2 pb-0" model={model} onModelSelect={setModel} />}
+      <div className="flex items-center justify-between p-2 pb-0">
+        {isChattable && <ModelSelect model={model} onModelSelect={setModel} />}
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Button variant="outline" size="icon" asChild>
+                <a href="https://platform.openai.com/settings/organization/usage" target="_blank">
+                  <TrendingUp />
+                </a>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Open AI API Usage</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
       <MessagePanel
         messages={messagesRef.current}
-        className="h-full overflow-auto p-2"
+        className="h-full overflow-auto p-2 text-sm"
         thinking={isTalking && Boolean(text)}
       />
+
       <SearchBar
         ref={searchBarRef}
         disabled={!isChattable}
