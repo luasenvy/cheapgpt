@@ -3,7 +3,7 @@ import "@/styles/prose.css";
 
 import { BotMessageSquare } from "lucide-react";
 import type { ChatCompletionMessageParam } from "openai/resources";
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import Markdown from "react-markdown";
 
 import rehypeHighlight from "rehype-highlight";
@@ -39,8 +39,19 @@ function renderMessage(content: ChatCompletionMessageParam["content"]) {
   return null;
 }
 
-export function MessagePanel({ messages, className, thinking, ...props }: MessagePanelProps) {
+export interface MessagePanelRef {
+  toBottom: () => void;
+}
+
+export const MessagePanel = forwardRef(function (
+  { messages, className, thinking, ...props }: MessagePanelProps,
+  ref: React.Ref<MessagePanelRef>
+) {
   const ulRef = useRef<HTMLUListElement>(null);
+  useImperativeHandle(ref, () => ({
+    toBottom: () => ulRef.current?.scrollTo(0, ulRef.current.scrollHeight),
+  }));
+
   const others = messages.slice(0, -1);
   const lastMessage = messages[messages.length - 1];
 
@@ -122,4 +133,4 @@ export function MessagePanel({ messages, className, thinking, ...props }: Messag
       </li>
     </ul>
   );
-}
+});

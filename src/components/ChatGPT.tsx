@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { toast } from "sonner";
 
+import type { MessagePanelRef } from "@/components/MessagePanel";
 import { MessagePanel } from "@/components/MessagePanel";
 import type { Model } from "@/components/ModelSelect";
 import { model as modelEnum } from "@/components/ModelSelect";
@@ -28,6 +29,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   ]);
   const [, setMessagesCount] = useState<number>(0);
   const openaiRef = useRef<OpenAI | null>(null);
+  const messagePanelRef = useRef<MessagePanelRef>(null);
   const searchBarRef = useRef<SearchBarRef>(null);
 
   const [text, setText] = useState<string>("");
@@ -42,6 +44,8 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
 
   const handleChat = async () => {
     if (!isChattable) return toast.error("Please Configure first.");
+
+    messagePanelRef.current?.toBottom();
 
     const context = messagesRef.current.slice(1).slice(-6);
     const message: ChatCompletionMessageParam = { role: "user", content: text };
@@ -82,10 +86,6 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
 
     setIsTalking(false);
   };
-
-  useEffect(() => {
-    if (!isTalking) searchBarRef.current?.focus();
-  }, [isTalking]);
 
   useEffect(() => {
     (async () => {
@@ -148,6 +148,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       </div>
 
       <MessagePanel
+        ref={messagePanelRef}
         messages={messagesRef.current}
         className="h-full overflow-auto p-2 text-sm"
         thinking={isTalking && Boolean(text)}
