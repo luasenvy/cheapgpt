@@ -1,4 +1,4 @@
-import { Gauge } from "lucide-react";
+import { Eraser, Gauge } from "lucide-react";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources";
 import { useEffect, useRef, useState } from "react";
@@ -24,16 +24,15 @@ const statusEnum = {
 
 type Status = (typeof status)[keyof typeof status];
 
+const defaultMessage: ChatCompletionMessageParam = {
+  role: "assistant",
+  content: "How may I assist you?",
+};
 export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   const [status, setStatus] = useState<Status>(statusEnum.idle);
   const [apiKey, setApiKey] = useState<string>("");
 
-  const messagesRef = useRef<Array<ChatCompletionMessageParam>>([
-    {
-      role: "assistant",
-      content: "How may I assist you?",
-    },
-  ]);
+  const messagesRef = useRef<Array<ChatCompletionMessageParam>>([defaultMessage]);
   const [, setMessagesCount] = useState<number>(0);
   const openaiRef = useRef<OpenAI | null>(null);
   const messagePanelRef = useRef<MessagePanelRef>(null);
@@ -63,6 +62,8 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       content: "",
     });
     setMessagesCount((prev) => prev + 1);
+    setImage(undefined);
+    setText("");
 
     setStatus(statusEnum.think);
     const stream = await openaiRef.current!.chat.completions.create({
@@ -71,11 +72,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       stream: true,
     });
 
-    setImage(undefined);
-    setText("");
-
     setStatus(statusEnum.talk);
-
     for await (const chunk of stream) {
       const [{ role: lastRole, content: lastMessage }, ...messages] =
         messagesRef.current.toReversed();
@@ -87,20 +84,27 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       setMessagesCount((prev) => prev + 1);
     }
 
+    await chrome.storage.sync.set({ messages: messagesRef.current });
+    setMessagesCount((prev) => prev + 1);
+
     setStatus(statusEnum.idle);
   };
 
   useEffect(() => {
     (async () => {
-      const { organization, project, apiKey, model } = await chrome.storage.sync.get([
+      const { organization, project, apiKey, model, messages } = await chrome.storage.sync.get([
         "organization",
         "project",
         "apiKey",
         "model",
+        "messages",
       ]);
 
       setApiKey(apiKey);
       setModel(model);
+
+      messagesRef.current = messages ?? [defaultMessage];
+      setMessagesCount((prev) => prev + 1);
 
       if (apiKey) {
         openaiRef.current = new OpenAI({
@@ -126,15 +130,41 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     })();
   }, []);
 
+  const handleClickClearMessages = () => {
+    messagesRef.current = [defaultMessage];
+    setMessagesCount((prev) => prev + 1);
+  };
+
   return (
     <div className={cn("flex h-full w-full flex-col space-y-2", className)} {...props}>
-      <div className="flex items-center justify-between p-2 pb-0">
+      <div className="flex items-center p-2 pb-0">
         {apiKey && <ModelSelect model={model} onModelSelect={setModel} />}
 
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger>
-              <Button variant="outline" size="sm" className="size-7 rounded-full p-0" asChild>
+            <TooltipTrigger className="ml-2">
+              <Button
+                variant="destructive"
+                size="sm"
+                className="size-7 rounded-full p-0"
+                onClick={handleClickClearMessages}
+              >
+                <Eraser />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Clear Messages</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger className="ml-auto">
+              <Button
+                variant="outline"
+                size="sm"
+                className="ml-auto size-7 rounded-full p-0"
+                asChild
+              >
                 <a href="https://platform.openai.com/settings/organization/usage" target="_blank">
                   <Gauge />
                 </a>

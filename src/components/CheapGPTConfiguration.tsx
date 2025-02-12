@@ -1,4 +1,5 @@
 import { Save } from "lucide-react";
+import type { ChatCompletionMessageParam } from "openai/resources";
 import { useEffect, useState } from "react";
 
 import { toast } from "sonner";
@@ -22,27 +23,30 @@ export function CheapGPTConfiguration() {
   const [project, setProject] = useState<string>("");
   const [apiKey, setApiKey] = useState<string>("");
   const [model, setModel] = useState<Model>(modelEnum["gpt-4o-mini"]);
+  const [messages, setMessages] = useState<Array<ChatCompletionMessageParam>>([]);
 
   // Saves options to chrome.storage
   const handleClickSaveConfiguration = async () => {
-    await chrome.storage.sync.set({ organization, project, apiKey, model });
+    await chrome.storage.sync.set({ organization, project, apiKey, model, messages });
 
     toast.success("Options saved.");
   };
 
   useEffect(() => {
     (async () => {
-      const { organization, project, apiKey, model } = await chrome.storage.sync.get([
+      const { organization, project, apiKey, model, messages } = await chrome.storage.sync.get([
         "organization",
         "project",
         "apiKey",
         "model",
+        "messages",
       ]);
 
       setOrganization(organization ?? "");
       setProject(project ?? "");
       setApiKey(apiKey ?? "");
       setModel(model || modelEnum["gpt-4o-mini"]);
+      setMessages(messages ?? []);
     })();
   }, []);
 
