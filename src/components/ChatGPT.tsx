@@ -1,7 +1,7 @@
 import { Gauge } from "lucide-react";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { toast } from "sonner";
 
@@ -16,9 +16,16 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
+const statusEnum = {
+  think: "think",
+  talk: "talk",
+  idle: "idle",
+} as const;
+
+type Status = (typeof status)[keyof typeof status];
+
 export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  const [organization, setOrganization] = useState<string>("");
-  const [project, setProject] = useState<string>("");
+  const [status, setStatus] = useState<Status>(statusEnum.idle);
   const [apiKey, setApiKey] = useState<string>("");
 
   const messagesRef = useRef<Array<ChatCompletionMessageParam>>([
@@ -35,15 +42,9 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   const [text, setText] = useState<string>("");
   const [image, setImage] = useState<string>();
   const [model, setModel] = useState<Model>(modelEnum["gpt-4o-mini"]);
-  const [isTalking, setIsTalking] = useState<boolean>(false);
-
-  const isChattable = useMemo(
-    () => Boolean(organization) && Boolean(project) && Boolean(apiKey),
-    [organization, project, apiKey]
-  );
 
   const handleChat = async () => {
-    if (!isChattable) return toast.error("Please Configure first.");
+    if (!apiKey) return toast.error("Please Configure first.");
 
     messagePanelRef.current?.toBottom();
 
@@ -63,7 +64,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     });
     setMessagesCount((prev) => prev + 1);
 
-    setIsTalking(true);
+    setStatus(statusEnum.think);
     const stream = await openaiRef.current!.chat.completions.create({
       model,
       messages: context.concat(message),
@@ -72,6 +73,8 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
 
     setImage(undefined);
     setText("");
+
+    setStatus(statusEnum.talk);
 
     for await (const chunk of stream) {
       const [{ role: lastRole, content: lastMessage }, ...messages] =
@@ -84,7 +87,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       setMessagesCount((prev) => prev + 1);
     }
 
-    setIsTalking(false);
+    setStatus(statusEnum.idle);
   };
 
   useEffect(() => {
@@ -96,13 +99,10 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
         "model",
       ]);
 
-      setOrganization(organization);
-      setProject(project);
       setApiKey(apiKey);
       setModel(model);
 
-      const isChattable = Boolean(organization) && Boolean(project) && Boolean(apiKey);
-      if (isChattable) {
+      if (apiKey) {
         openaiRef.current = new OpenAI({
           organization,
           project,
@@ -129,7 +129,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   return (
     <div className={cn("flex h-full w-full flex-col space-y-2", className)} {...props}>
       <div className="flex items-center justify-between p-2 pb-0">
-        {isChattable && <ModelSelect model={model} onModelSelect={setModel} />}
+        {apiKey && <ModelSelect model={model} onModelSelect={setModel} />}
 
         <TooltipProvider>
           <Tooltip>
@@ -151,13 +151,13 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
         ref={messagePanelRef}
         messages={messagesRef.current}
         className="h-full overflow-auto p-2 text-sm"
-        thinking={isTalking && Boolean(text)}
+        thinking={status === statusEnum.think}
       />
 
       <SearchBar
         ref={searchBarRef}
-        disabled={!isChattable}
-        talking={isTalking}
+        disabled={!apiKey}
+        talking={status === statusEnum.talk}
         className="flex-shrink-0 p-2 pt-0"
         text={text}
         image={image}

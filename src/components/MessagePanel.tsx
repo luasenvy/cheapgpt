@@ -1,7 +1,7 @@
 import "highlight.js/styles/monokai-sublime.css";
 import "@/styles/prose.css";
 
-import { BotMessageSquare } from "lucide-react";
+import { BotMessageSquare, Disc3 } from "lucide-react";
 import type { ChatCompletionMessageParam } from "openai/resources";
 import { Fragment, forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import Markdown from "react-markdown";
@@ -117,7 +117,12 @@ export const MessagePanel = forwardRef(function (
         )}
 
         {thinking ? (
-          <p>thinking ...</p>
+          <div className="flex items-center justify-center gap-2">
+            <Disc3 className="size-5 animate-spin text-primary" />
+            <p className="bg-gradient-to-r from-[#D247BF] to-primary bg-clip-text text-transparent">
+              thinking ...
+            </p>
+          </div>
         ) : (
           <Markdown
             remarkPlugins={[remarkGfm]}

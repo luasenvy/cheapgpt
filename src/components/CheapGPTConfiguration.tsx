@@ -39,15 +39,29 @@ export function CheapGPTConfiguration() {
         "model",
       ]);
 
-      setOrganization(organization);
-      setProject(project);
-      setApiKey(apiKey);
+      setOrganization(organization ?? "");
+      setProject(project ?? "");
+      setApiKey(apiKey ?? "");
       setModel(model || modelEnum["gpt-4o-mini"]);
     })();
   }, []);
 
   return (
     <div className="flex flex-col space-y-4">
+      <div className="flex items-center space-x-2">
+        <Label className="w-1/3 text-nowrap font-semibold" htmlFor="api-key" title="required">
+          API Key<span className="text-lg text-primary">*</span>
+        </Label>
+        <Textarea
+          id="api-key"
+          required
+          placeholder="API Key"
+          className="h-28 resize-none"
+          value={apiKey}
+          onInput={(e) => setApiKey(e.currentTarget.value)}
+        />
+      </div>
+
       <div className="flex items-center space-x-2">
         <Label className="w-1/3 text-nowrap" htmlFor="org-id">
           Organization ID
@@ -69,19 +83,6 @@ export function CheapGPTConfiguration() {
           placeholder="Project ID"
           value={project}
           onInput={(e) => setProject(e.currentTarget.value)}
-        />
-      </div>
-
-      <div className="flex items-center space-x-2">
-        <Label className="w-1/3 text-nowrap" htmlFor="api-key">
-          API Key
-        </Label>
-        <Textarea
-          id="api-key"
-          placeholder="API Key"
-          className="h-28 resize-none"
-          value={apiKey}
-          onInput={(e) => setApiKey(e.currentTarget.value)}
         />
       </div>
 
@@ -108,7 +109,7 @@ export function CheapGPTConfiguration() {
         variant="outline"
         size="icon"
         onClick={handleClickSaveConfiguration}
-        disabled={!Boolean(organization) || !Boolean(project) || !Boolean(apiKey)}
+        disabled={!apiKey}
       >
         <Save />
       </Button>
