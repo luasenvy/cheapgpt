@@ -99,7 +99,7 @@ export const MessagePanel = forwardRef(function (
               rehypePlugins={[rehypeHighlight]}
               className={cn(`prose max-w-full break-words`, {
                 [userBalloon]: "user" === role,
-                "w-full": "assistant" === role,
+                "mt-2 w-full": "assistant" === role,
               })}
             >
               {renderMessage(content)}
@@ -129,7 +129,7 @@ export const MessagePanel = forwardRef(function (
             rehypePlugins={[rehypeHighlight]}
             className={cn(`prose max-w-full break-words`, {
               [userBalloon]: "user" === lastMessage.role,
-              "w-full": "assistant" === lastMessage.role,
+              "mt-2 w-full": "assistant" === lastMessage.role,
             })}
           >
             {renderMessage(lastMessage.content)}

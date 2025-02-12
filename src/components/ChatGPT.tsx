@@ -48,7 +48,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
 
     messagePanelRef.current?.toBottom();
 
-    const context = messagesRef.current.slice(1).slice(-6);
+    const context = messagesRef.current.slice(1).slice(messagesRef.current.length);
     const message: ChatCompletionMessageParam = { role: "user", content: text };
 
     if (image) {
@@ -58,30 +58,28 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       ];
     }
 
-    messagesRef.current = Array.from(messagesRef.current).concat(message, {
-      role: "assistant",
-      content: "",
-    });
+    const messages = context.concat(message, { role: "assistant", content: "" });
+    messagesRef.current = [defaultMessage].concat(messages);
     setMessagesCount((prev) => prev + 1);
     setImage(undefined);
     setText("");
 
     setStatus(statusEnum.think);
+
     const stream = await openaiRef.current!.chat.completions.create({
       model,
-      messages: context.concat(message),
+      messages,
       stream: true,
     });
 
     setStatus(statusEnum.talk);
-    for await (const chunk of stream) {
-      const [{ role: lastRole, content: lastMessage }, ...messages] =
-        messagesRef.current.toReversed();
 
-      messagesRef.current = Array.from(messages.toReversed()).concat({
-        role: lastRole,
-        content: lastMessage + (chunk.choices[0]?.delta?.content || ""),
-      } as ChatCompletionMessageParam);
+    const lastIndex = messagesRef.current.length - 1;
+    for await (const chunk of stream) {
+      const lastContent = messagesRef.current[lastIndex].content;
+      messagesRef.current[lastIndex].content =
+        lastContent + (chunk.choices[0]?.delta?.content || "");
+
       setMessagesCount((prev) => prev + 1);
     }
 
@@ -146,9 +144,9 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
           <Tooltip>
             <TooltipTrigger className="ml-2">
               <Button
-                variant="destructive"
+                variant="secondary"
                 size="sm"
-                className="size-7 rounded-full p-0"
+                className="size-7 rounded-full p-0 hover:bg-orange-600 hover:text-white"
                 onClick={handleClickClearMessages}
               >
                 <Eraser />
