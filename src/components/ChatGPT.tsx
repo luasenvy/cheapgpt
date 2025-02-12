@@ -1,10 +1,10 @@
-import { TrendingUp } from "lucide-react";
+import { Gauge } from "lucide-react";
 import OpenAI from "openai";
+import type { ChatCompletionMessageParam } from "openai/resources";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { toast } from "sonner";
 
-import type { Message } from "@/components/MessagePanel";
 import { MessagePanel } from "@/components/MessagePanel";
 import type { Model } from "@/components/ModelSelect";
 import { model as modelEnum } from "@/components/ModelSelect";
@@ -20,7 +20,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   const [project, setProject] = useState<string>("");
   const [apiKey, setApiKey] = useState<string>("");
 
-  const messagesRef = useRef<Array<Message>>([
+  const messagesRef = useRef<Array<ChatCompletionMessageParam>>([
     {
       role: "assistant",
       content: "How may I assist you?",
@@ -31,6 +31,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   const searchBarRef = useRef<SearchBarRef>(null);
 
   const [text, setText] = useState<string>("");
+  const [image, setImage] = useState<string>();
   const [model, setModel] = useState<Model>(modelEnum["gpt-4o-mini"]);
   const [isTalking, setIsTalking] = useState<boolean>(false);
 
@@ -43,7 +44,14 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     if (!isChattable) return toast.error("Please Configure first.");
 
     const context = messagesRef.current.slice(1).slice(-6);
-    const message: Message = { role: "user", content: text };
+    const message: ChatCompletionMessageParam = { role: "user", content: text };
+
+    if (image) {
+      message.content = [
+        { type: "text", text },
+        { type: "image_url", image_url: { url: image } },
+      ];
+    }
 
     messagesRef.current = Array.from(messagesRef.current).concat(message, {
       role: "assistant",
@@ -58,6 +66,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       stream: true,
     });
 
+    setImage(undefined);
     setText("");
 
     for await (const chunk of stream) {
@@ -67,7 +76,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       messagesRef.current = Array.from(messages.toReversed()).concat({
         role: lastRole,
         content: lastMessage + (chunk.choices[0]?.delta?.content || ""),
-      });
+      } as ChatCompletionMessageParam);
       setMessagesCount((prev) => prev + 1);
     }
 
@@ -120,9 +129,9 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <Button variant="outline" size="icon" asChild>
+              <Button variant="outline" size="sm" className="size-7 rounded-full p-0" asChild>
                 <a href="https://platform.openai.com/settings/organization/usage" target="_blank">
-                  <TrendingUp />
+                  <Gauge />
                 </a>
               </Button>
             </TooltipTrigger>
@@ -145,7 +154,9 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
         talking={isTalking}
         className="flex-shrink-0 p-2 pt-0"
         text={text}
+        image={image}
         onInputMessage={(input) => setText(input)}
+        onInputImage={(base64) => setImage(base64)}
         onChat={handleChat}
       />
     </div>

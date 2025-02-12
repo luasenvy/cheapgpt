@@ -1,6 +1,6 @@
-import { ArrowUp, LoaderCircle } from "lucide-react";
+import { ArrowUp, LoaderCircle, X } from "lucide-react";
 
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,7 +10,9 @@ import { cn } from "@/lib/utils";
 interface SearchBarProps extends React.HTMLAttributes<HTMLDivElement> {
   onChat: (text: string) => void;
   onInputMessage: (text: string) => void;
+  onInputImage: (base64?: string) => void;
   text: string;
+  image?: string;
   disabled: boolean;
   talking: boolean;
 }
@@ -24,7 +26,9 @@ export const SearchBar = forwardRef(function (
     className,
     onChat: handleChat,
     onInputMessage: handleInputMessage,
+    onInputImage: handleInputImage,
     text,
+    image,
     disabled,
     talking,
     ...props
@@ -36,8 +40,59 @@ export const SearchBar = forwardRef(function (
     focus: () => inputRef.current?.focus(),
   }));
 
+  const handleClipboardImage = (e: ClipboardEvent) => {
+    const clipboard = e.clipboardData;
+    if (!clipboard?.files.length) return;
+
+    const [file] = clipboard.files;
+
+    if (!file.type.startsWith("image/")) return;
+
+    renderImage(file);
+
+    e.preventDefault();
+  };
+
+  const renderImage = (file: File) => {
+    const reader = new FileReader();
+
+    reader.addEventListener("load", (e: ProgressEvent<FileReader>) =>
+      handleInputImage(e.target?.result as string)
+    );
+
+    reader.readAsDataURL(file);
+  };
+
+  useEffect(() => {
+    if (!inputRef.current) return;
+
+    inputRef.current.addEventListener("paste", handleClipboardImage);
+
+    return () => {
+      inputRef.current?.removeEventListener("paste", handleClipboardImage);
+    };
+  }, [inputRef]);
+
   return (
     <div className={cn("flex items-center space-x-2", className)} {...props}>
+      {image && (
+        <div className="relative h-full w-20 overflow-hidden rounded-md border-card shadow">
+          <div
+            className="size-full bg-cover bg-center"
+            style={{ backgroundImage: `url(${image})` }}
+          ></div>
+
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute right-0.5 top-0.5 size-5 rounded-full p-0"
+            onClick={() => handleInputImage(undefined)}
+          >
+            <X />
+          </Button>
+        </div>
+      )}
+
       <Textarea
         ref={inputRef}
         placeholder="Type a message..."
@@ -60,7 +115,7 @@ export const SearchBar = forwardRef(function (
               size="icon"
               variant="outline"
               disabled={!text || disabled || talking}
-              className="size-8 flex-shrink-0 rounded-full"
+              className="size-8 flex-shrink-0 rounded-full p-0"
               onClick={() => handleChat(text)}
             >
               {talking ? <LoaderCircle className="animate-spin" /> : <ArrowUp />}

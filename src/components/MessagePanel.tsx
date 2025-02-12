@@ -2,6 +2,7 @@ import "highlight.js/styles/monokai-sublime.css";
 import "@/styles/prose.css";
 
 import { BotMessageSquare } from "lucide-react";
+import type { ChatCompletionMessageParam } from "openai/resources";
 import { Fragment, useEffect, useRef } from "react";
 import Markdown from "react-markdown";
 
@@ -10,18 +11,33 @@ import remarkGfm from "remark-gfm";
 
 import { cn } from "@/lib/utils";
 
-export interface Message {
-  role: "user" | "assistant";
-  content: string;
-}
-
 interface MessagePanelProps extends React.HTMLAttributes<HTMLUListElement> {
-  messages: Array<Message>;
+  messages: Array<ChatCompletionMessageParam>;
   thinking: boolean;
 }
 
 const userBalloon =
   "relative rounded-lg bg-teal-200/20 px-2 py-1 after:absolute after:left-full after:top-1/2 after:-translate-y-1/2 after:border-b-4 after:border-l-4 after:border-t-4 after:border-b-transparent after:border-l-teal-200/20 after:border-t-transparent [&>blockquote>p]:first-letter:!ml-0 [&>p:last-child]:!mb-0 [&>p]:first-letter:!ml-0 mt-4 [&>p>code]:bg-card";
+
+function renderMessage(content: ChatCompletionMessageParam["content"]) {
+  if ("string" === typeof content) return content;
+
+  if (Array.isArray(content)) {
+    const markdown = content
+      .toSorted(({ type: b }) => ("image_url" === b ? -1 : 0))
+      .map((item) => {
+        if ("text" === item.type) return `${item.text}\n`;
+        if ("image_url" === item.type) return `![Clipboard Image](${item.image_url.url})\n`;
+      })
+      .filter(Boolean)
+      .join("\n");
+
+    console.info(markdown);
+    return markdown;
+  }
+
+  return null;
+}
 
 export function MessagePanel({ messages, className, thinking, ...props }: MessagePanelProps) {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -67,6 +83,7 @@ export function MessagePanel({ messages, className, thinking, ...props }: Messag
             )}
 
             <Markdown
+              urlTransform={(url) => url}
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeHighlight]}
               className={cn(`prose max-w-full break-words`, {
@@ -74,7 +91,7 @@ export function MessagePanel({ messages, className, thinking, ...props }: Messag
                 "w-full": "assistant" === role,
               })}
             >
-              {content}
+              {renderMessage(content)}
             </Markdown>
           </li>
         </Fragment>
@@ -99,7 +116,7 @@ export function MessagePanel({ messages, className, thinking, ...props }: Messag
               "w-full": "assistant" === lastMessage.role,
             })}
           >
-            {lastMessage.content}
+            {renderMessage(lastMessage.content)}
           </Markdown>
         )}
       </li>
