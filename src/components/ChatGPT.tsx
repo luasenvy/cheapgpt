@@ -130,7 +130,8 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     })();
   }, []);
 
-  const handleClickClearMessages = () => {
+  const handleClickClearMessages = async () => {
+    await chrome.storage.sync.set({ messages: [] });
     messagesRef.current = [defaultMessage];
     setMessagesCount((prev) => prev + 1);
   };
