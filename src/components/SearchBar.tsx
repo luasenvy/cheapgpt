@@ -33,9 +33,7 @@ export const SearchBar = forwardRef(function (
 ) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   useImperativeHandle(ref, () => ({
-    focus: () => {
-      inputRef.current?.focus();
-    },
+    focus: () => inputRef.current?.focus(),
   }));
 
   return (

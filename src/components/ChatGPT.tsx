@@ -95,7 +95,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
             dangerouslyAllowBrowser: true,
           });
 
-          searchBarRef.current?.focus();
+          setTimeout(() => searchBarRef.current?.focus());
         } else {
           messagesRef.current = [
             {
