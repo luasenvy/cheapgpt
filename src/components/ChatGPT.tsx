@@ -88,37 +88,42 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   }, [isTalking]);
 
   useEffect(() => {
-    chrome.storage.sync.get(
-      { organization, project, apiKey },
-      ({ organization, project, apiKey }) => {
-        setOrganization(organization);
-        setProject(project);
-        setApiKey(apiKey);
+    (async () => {
+      const { organization, project, apiKey, model } = await chrome.storage.sync.get([
+        "organization",
+        "project",
+        "apiKey",
+        "model",
+      ]);
 
-        const isChattable = Boolean(organization) && Boolean(project) && Boolean(apiKey);
-        if (isChattable) {
-          openaiRef.current = new OpenAI({
-            organization,
-            project,
-            apiKey,
-            dangerouslyAllowBrowser: true,
-          });
+      setOrganization(organization);
+      setProject(project);
+      setApiKey(apiKey);
+      setModel(model);
 
-          setTimeout(() => searchBarRef.current?.focus());
-        } else {
-          messagesRef.current = [
-            {
-              role: "assistant",
-              content: `**Please configure your OpenAI API first.** 🫠
+      const isChattable = Boolean(organization) && Boolean(project) && Boolean(apiKey);
+      if (isChattable) {
+        openaiRef.current = new OpenAI({
+          organization,
+          project,
+          apiKey,
+          dangerouslyAllowBrowser: true,
+        });
+
+        setTimeout(() => searchBarRef.current?.focus());
+      } else {
+        messagesRef.current = [
+          {
+            role: "assistant",
+            content: `**Please configure your OpenAI API first.** 🫠
 
 > Right click on the extension icon and select "Options". 🛠️
-              `,
-            },
-          ];
-          setMessagesCount((prev) => prev + 1);
-        }
+            `,
+          },
+        ];
+        setMessagesCount((prev) => prev + 1);
       }
-    );
+    })();
   }, []);
 
   return (
