@@ -105,8 +105,6 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   };
 
   const appendMessage = ({ text, image }: { text: string; image?: string }) => {
-    messagePanelRef.current?.toBottom();
-
     const context = messagesRef.current.slice(1, messagesRef.current.length);
 
     const message: ChatCompletionMessageParam = { role: "user", content: text };
@@ -123,6 +121,8 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     setMessagesCount((prev) => prev + 1);
     setImage(undefined);
     setText("");
+
+    setTimeout(() => messagePanelRef.current?.toBottom());
 
     return messages;
   };

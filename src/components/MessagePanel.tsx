@@ -62,7 +62,7 @@ export const MessagePanel = forwardRef(function (
       const ul = ulRef.current!;
 
       const { clientHeight, scrollTop, scrollHeight } = ul;
-      if (clientHeight + scrollTop + 80 >= scrollHeight) ul.scrollTo(0, scrollHeight);
+      if (clientHeight + scrollTop + 70 >= scrollHeight) ul.scrollTo(0, scrollHeight);
     });
 
     mutationObserver.observe(ulRef.current, {
