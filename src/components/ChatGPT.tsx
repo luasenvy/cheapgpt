@@ -73,7 +73,16 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       messages: [
         {
           role: "user",
-          content: `\`\`\`text\n${content}\`\`\`\n\nSummarize the content in chronological order with 5 key points, and present it in the language of the content.`,
+          content: [
+            {
+              type: "text",
+              text: "Summarize the content in chronological order with 5 key points, and present it in the language of the content.",
+            },
+            {
+              type: "text",
+              text: content,
+            },
+          ],
         },
       ],
       stream: true,
