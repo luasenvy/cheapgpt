@@ -23,7 +23,7 @@ const statusEnum = {
   idle: "idle",
 } as const;
 
-type Status = (typeof status)[keyof typeof status];
+type Status = (typeof statusEnum)[keyof typeof statusEnum];
 
 const defaultMessage: ChatCompletionMessageParam = {
   role: "assistant",
@@ -56,8 +56,15 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     const lastIndex = messagesRef.current.length - 1;
     for await (const chunk of stream) {
       const lastContent = messagesRef.current[lastIndex].content;
-      messagesRef.current[lastIndex].content =
-        lastContent + (chunk.choices[0]?.delta?.content || "");
+
+      const { choices, usage } = chunk;
+
+      if (choices?.length) {
+        messagesRef.current[lastIndex].content = lastContent + (choices[0].delta.content || "");
+      } else if (usage) {
+        messagesRef.current[lastIndex].content =
+          lastContent + `\n\n*Total ${usage.total_tokens} Tokens*`;
+      }
 
       setMessagesCount((prev) => prev + 1);
     }
@@ -86,6 +93,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
         },
       ],
       stream: true,
+      stream_options: { include_usage: true },
     });
 
     await appendStream({ stream, virtual: true });
@@ -106,6 +114,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       model,
       messages,
       stream: true,
+      stream_options: { include_usage: true },
     });
 
     await appendStream({ stream });
