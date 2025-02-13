@@ -1,6 +1,7 @@
-import { Eraser, Gauge } from "lucide-react";
+import { Eraser, Gauge, TextSelect } from "lucide-react";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources";
+import type { Stream } from "openai/streaming";
 import { useEffect, useRef, useState } from "react";
 
 import { toast } from "sonner";
@@ -43,12 +44,67 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   const [image, setImage] = useState<string>();
   const [model, setModel] = useState<Model>(modelEnum["gpt-4o-mini"]);
 
-  const handleChat = async () => {
-    if (!apiKey) return toast.error("Please Configure first.");
+  const appendStream = async (stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>) => {
+    setStatus(statusEnum.talk);
 
+    const lastIndex = messagesRef.current.length - 1;
+    for await (const chunk of stream) {
+      const lastContent = messagesRef.current[lastIndex].content;
+      messagesRef.current[lastIndex].content =
+        lastContent + (chunk.choices[0]?.delta?.content || "");
+
+      setMessagesCount((prev) => prev + 1);
+    }
+  };
+
+  const getSummaryPage = async ({ model, content }: { model: Model; content: string }) => {
+    setStatus(statusEnum.think);
+
+    await appendStream(
+      await openaiRef.current!.chat.completions.create({
+        model,
+        messages: [
+          {
+            role: "user",
+            content: `\`\`\`text\n${content}\`\`\`\nSummary page. Answer in the language of the content`,
+          },
+        ],
+        stream: true,
+      })
+    );
+
+    await chrome.storage.sync.set({ messages: messagesRef.current });
+
+    setStatus(statusEnum.idle);
+  };
+
+  const getOpenAIResponse = async ({
+    model,
+    messages,
+  }: {
+    model: Model;
+    messages: Array<ChatCompletionMessageParam>;
+  }) => {
+    setStatus(statusEnum.think);
+
+    await appendStream(
+      await openaiRef.current!.chat.completions.create({
+        model,
+        messages,
+        stream: true,
+      })
+    );
+
+    await chrome.storage.sync.set({ messages: messagesRef.current });
+
+    setStatus(statusEnum.idle);
+  };
+
+  const appendMessage = ({ text, image }: { text: string; image?: string }) => {
     messagePanelRef.current?.toBottom();
 
-    const context = messagesRef.current.slice(1).slice(messagesRef.current.length);
+    const context = messagesRef.current.slice(1, messagesRef.current.length);
+
     const message: ChatCompletionMessageParam = { role: "user", content: text };
 
     if (image) {
@@ -64,29 +120,14 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     setImage(undefined);
     setText("");
 
-    setStatus(statusEnum.think);
+    return messages;
+  };
 
-    const stream = await openaiRef.current!.chat.completions.create({
-      model,
-      messages,
-      stream: true,
-    });
+  const handleChat = async () => {
+    if (!apiKey) return toast.error("Please Configure first.");
 
-    setStatus(statusEnum.talk);
-
-    const lastIndex = messagesRef.current.length - 1;
-    for await (const chunk of stream) {
-      const lastContent = messagesRef.current[lastIndex].content;
-      messagesRef.current[lastIndex].content =
-        lastContent + (chunk.choices[0]?.delta?.content || "");
-
-      setMessagesCount((prev) => prev + 1);
-    }
-
-    await chrome.storage.sync.set({ messages: messagesRef.current });
-    setMessagesCount((prev) => prev + 1);
-
-    setStatus(statusEnum.idle);
+    const messages = appendMessage({ text, image });
+    getOpenAIResponse({ model, messages });
   };
 
   useEffect(() => {
@@ -132,6 +173,42 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     })();
   }, []);
 
+  const handleClickSendCurrentPage = async () => {
+    // 현재 활성 탭의 정보를 가져옵니다.
+    chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
+      if (activeTab && /^https?:\/\//.test(activeTab.url ?? "")) {
+        // 활성 탭의 <body> 내용을 가져오는 스크립트를 실행합니다.
+        chrome.scripting.executeScript(
+          {
+            target: { tabId: activeTab.id! },
+            func: () => {
+              const body = document.createDocumentFragment();
+              body.appendChild(document.body.cloneNode(true));
+
+              body
+                .querySelectorAll(
+                  "style,script,link,iframe,noscript,template,svg,img,video,canvas,object,embed,frame,frameset,button,header,footer"
+                )
+                .forEach((el) => el.remove());
+
+              return body.textContent
+                ?.replace(/[ \t]{2,}/g, " ")
+                .replace(/[ \t]\n/g, "\n")
+                .replace(/\n{2,}/g, "\n");
+            },
+          },
+          ([{ result: content }]) => {
+            if (!content) return;
+
+            appendMessage({ text: "Summary Contents" });
+
+            getSummaryPage({ model, content });
+          }
+        );
+      }
+    });
+  };
+
   const handleClickClearMessages = async () => {
     await chrome.storage.sync.set({ messages: [] });
     messagesRef.current = [defaultMessage];
@@ -147,6 +224,22 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
           <Tooltip>
             <TooltipTrigger className="ml-2">
               <Button
+                variant="outline"
+                size="sm"
+                className="size-7 rounded-full border-primary p-0 hover:bg-primary hover:text-white"
+                onClick={handleClickSendCurrentPage}
+              >
+                <TextSelect />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Summary Page</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger className="ml-auto">
+              <Button
                 variant="secondary"
                 size="sm"
                 className="size-7 rounded-full p-0 hover:bg-orange-600 hover:text-white"
@@ -161,7 +254,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
           </Tooltip>
 
           <Tooltip>
-            <TooltipTrigger className="ml-auto">
+            <TooltipTrigger className="ml-2">
               <Button
                 variant="outline"
                 size="sm"

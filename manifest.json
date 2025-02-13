@@ -1,7 +1,7 @@
 {
   "name": "CheapGPT",
   "description": "Chrome Extension for Using ChatGPT API",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "manifest_version": 3,
   "options_page": "dist/options.html",
   "action": {
@@ -12,11 +12,16 @@
     "_execute_action": {
       "suggested_key": {
         "default": "Ctrl+Shift+E"
-      },
-      "description": "Toggle CheapGPT"
+      }
     }
   },
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
   "permissions": [
+    "activeTab",
+    "scripting",
     "storage"
   ]
 }
