@@ -44,7 +44,13 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   const [image, setImage] = useState<string>();
   const [model, setModel] = useState<Model>(modelEnum["gpt-4o-mini"]);
 
-  const appendStream = async (stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>) => {
+  const appendStream = async ({
+    stream,
+    virtual,
+  }: {
+    stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>;
+    virtual?: boolean;
+  }) => {
     setStatus(statusEnum.talk);
 
     const lastIndex = messagesRef.current.length - 1;
@@ -55,25 +61,25 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
 
       setMessagesCount((prev) => prev + 1);
     }
+
+    if (!virtual) await chrome.storage.sync.set({ messages: messagesRef.current });
   };
 
   const getSummaryPage = async ({ model, content }: { model: Model; content: string }) => {
     setStatus(statusEnum.think);
 
-    await appendStream(
-      await openaiRef.current!.chat.completions.create({
-        model,
-        messages: [
-          {
-            role: "user",
-            content: `\`\`\`text\n${content}\`\`\`\nSummary page. Answer in the language of the content`,
-          },
-        ],
-        stream: true,
-      })
-    );
+    const stream = await openaiRef.current!.chat.completions.create({
+      model,
+      messages: [
+        {
+          role: "user",
+          content: `\`\`\`text\n${content}\`\`\`\n\nSummarize the content no more than 6 key points with timeline and respond in the same language.`,
+        },
+      ],
+      stream: true,
+    });
 
-    await chrome.storage.sync.set({ messages: messagesRef.current });
+    await appendStream({ stream, virtual: true });
 
     setStatus(statusEnum.idle);
   };
@@ -87,15 +93,13 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   }) => {
     setStatus(statusEnum.think);
 
-    await appendStream(
-      await openaiRef.current!.chat.completions.create({
-        model,
-        messages,
-        stream: true,
-      })
-    );
+    const stream = await openaiRef.current!.chat.completions.create({
+      model,
+      messages,
+      stream: true,
+    });
 
-    await chrome.storage.sync.set({ messages: messagesRef.current });
+    await appendStream({ stream });
 
     setStatus(statusEnum.idle);
   };
