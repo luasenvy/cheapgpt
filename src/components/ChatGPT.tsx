@@ -76,7 +76,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
           content: [
             {
               type: "text",
-              text: "Summarize the content in chronological order with 5 key points, and present it in the language of the content.",
+              text: "Provide a list summarizing the content into 5 key points, each captured in a one or two three sentence, and presented in the same language as the original content.",
             },
             {
               type: "text",
