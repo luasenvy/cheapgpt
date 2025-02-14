@@ -22,30 +22,35 @@ export function CheapGPTConfiguration() {
   const [organization, setOrganization] = useState<string>("");
   const [project, setProject] = useState<string>("");
   const [apiKey, setApiKey] = useState<string>("");
+
+  const [sumLng, setSumLng] = useState("auto");
   const [model, setModel] = useState<Model>(modelEnum["gpt-4o-mini"]);
   const [messages, setMessages] = useState<Array<ChatCompletionMessageParam>>([]);
 
   // Saves options to chrome.storage
   const handleClickSaveConfiguration = async () => {
-    await chrome.storage.sync.set({ organization, project, apiKey, model, messages });
+    await chrome.storage.sync.set({ organization, project, apiKey, model, sumLng, messages });
 
     toast.success("Options saved.");
   };
 
   useEffect(() => {
     (async () => {
-      const { organization, project, apiKey, model, messages } = await chrome.storage.sync.get([
-        "organization",
-        "project",
-        "apiKey",
-        "model",
-        "messages",
-      ]);
+      const { organization, project, apiKey, model, sumLng, messages } =
+        await chrome.storage.sync.get([
+          "organization",
+          "project",
+          "apiKey",
+          "model",
+          "sumLng",
+          "messages",
+        ]);
 
       setOrganization(organization ?? "");
       setProject(project ?? "");
       setApiKey(apiKey ?? "");
       setModel(model || modelEnum["gpt-4o-mini"]);
+      setSumLng(sumLng || "auto");
       setMessages(messages ?? []);
     })();
   }, []);
@@ -104,6 +109,44 @@ export function CheapGPTConfiguration() {
                 {name}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Label className="w-1/3 text-nowrap" htmlFor="model">
+          Summary Language
+        </Label>
+        <Select value={sumLng} onValueChange={setSumLng}>
+          <SelectTrigger id="model" className="w-full">
+            <SelectValue placeholder="Select Language" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="auto">detect in content</SelectItem>
+            <SelectItem value="한국어">한국어</SelectItem>
+            <SelectItem value="English (NA)">English (NA)</SelectItem>
+            <SelectItem value="English (EUW)">English (EUW)</SelectItem>
+            <SelectItem value="Deutsch">Deutsch</SelectItem>
+            <SelectItem value="Español (EUW)">Español (EUW)</SelectItem>
+            <SelectItem value="Français">Français</SelectItem>
+            <SelectItem value="Italiano">Italiano</SelectItem>
+            <SelectItem value="Polski">Polski</SelectItem>
+            <SelectItem value="Ελληνικά">Ελληνικά</SelectItem>
+            <SelectItem value="Română">Română</SelectItem>
+            <SelectItem value="Magyar">Magyar</SelectItem>
+            <SelectItem value="Čeština">Čeština</SelectItem>
+            <SelectItem value="Español (LATAM)">Español (LATAM)</SelectItem>
+            <SelectItem value="Português">Português</SelectItem>
+            <SelectItem value="日本語">日本語</SelectItem>
+            <SelectItem value="Русский">Русский</SelectItem>
+            <SelectItem value="Türkçe">Türkçe</SelectItem>
+            <SelectItem value="English (OCE)">English (OCE)</SelectItem>
+            <SelectItem value="English (SG)">English (SG)</SelectItem>
+            <SelectItem value="English (PH)">English (PH)</SelectItem>
+            <SelectItem value="Tiếng Việt">Tiếng Việt</SelectItem>
+            <SelectItem value="ภาษาไทย">ภาษาไทย</SelectItem>
+            <SelectItem value="繁體中文">繁體中文</SelectItem>
+            <SelectItem value="العربية">العربية</SelectItem>
           </SelectContent>
         </Select>
       </div>

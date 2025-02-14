@@ -1,7 +1,7 @@
 {
   "name": "chapgpt",
   "description": "Chrome Extension for Using ChatGPT API",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "private": true,
   "scripts": {
     "dev": "vite",

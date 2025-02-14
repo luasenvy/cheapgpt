@@ -43,6 +43,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   const [text, setText] = useState<string>("");
   const [image, setImage] = useState<string>();
   const [model, setModel] = useState<Model>(modelEnum["gpt-4o-mini"]);
+  const [sumLng, setSumLng] = useState("auto");
 
   const appendStream = async ({
     stream,
@@ -76,8 +77,9 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   const getSummaryPage = async ({ model, content }: { model: Model; content: string }) => {
     setStatus(statusEnum.think);
 
-    const summaryPrompt =
-      "Provide a list summarizing the content into 3 key points, each captured in less two sentences, each item start with bold title, and presented in the main language as content.";
+    const language = "auto" === sumLng ? `primary language of content` : `${sumLng} language`;
+
+    const summaryPrompt = `Provide a list summarizing into 3 key points, each in less single sentence, each sentence has bold title, presented as ${language}.`;
 
     const stream = await openaiRef.current!.chat.completions.create({
       model,
@@ -157,16 +159,19 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
 
   useEffect(() => {
     (async () => {
-      const { organization, project, apiKey, model, messages } = await chrome.storage.sync.get([
-        "organization",
-        "project",
-        "apiKey",
-        "model",
-        "messages",
-      ]);
+      const { organization, project, apiKey, model, sumLng, messages } =
+        await chrome.storage.sync.get([
+          "organization",
+          "project",
+          "apiKey",
+          "model",
+          "sumLng",
+          "messages",
+        ]);
 
       setApiKey(apiKey);
       setModel(model);
+      setSumLng(sumLng);
 
       messagesRef.current = [defaultMessage].concat(messages);
       setMessagesCount((prev) => prev + 1);
@@ -246,7 +251,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   return (
     <div className={cn("flex h-full w-full flex-col space-y-2", className)} {...props}>
       <div className="flex items-center p-2 pb-0">
-        {apiKey && <ModelSelect model={model} onModelSelect={setModel} />}
+        {apiKey && <ModelSelect model={model} onModelSelect={setModel} className="w-30" />}
 
         <TooltipProvider>
           <Tooltip>

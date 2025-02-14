@@ -27,7 +27,7 @@ export function ModelSelect({
   return (
     <div {...props}>
       <Select value={model} onValueChange={handleModelSelect}>
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-full">
           <SelectValue placeholder="Select a fruit" />
         </SelectTrigger>
         <SelectContent>
