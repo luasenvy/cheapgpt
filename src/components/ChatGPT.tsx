@@ -30,6 +30,8 @@ const defaultMessage: ChatCompletionMessageParam = {
   content: "How may I assist you?",
 };
 
+const numberFormat = new Intl.NumberFormat();
+
 export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   const [status, setStatus] = useState<Status>(statusEnum.idle);
   const [apiKey, setApiKey] = useState<string>("");
@@ -64,7 +66,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
         messagesRef.current[lastIndex].content = lastContent + (choices[0].delta.content || "");
       } else if (usage) {
         messagesRef.current[lastIndex].content =
-          lastContent + `\n\n> Total ${usage.total_tokens} Tokens`;
+          lastContent + `\n\n> Total ${numberFormat.format(usage.total_tokens)} Tokens`;
       }
 
       setMessagesCount((prev) => prev + 1);
