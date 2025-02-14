@@ -143,6 +143,11 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     return messages;
   };
 
+  const handleClear = async () => {
+    messagesRef.current = [defaultMessage];
+    setMessagesCount((prev) => prev + 1);
+  };
+
   const handleChat = async () => {
     if (!apiKey) return toast.error("Please Configure first.");
 
@@ -313,6 +318,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
         onInputMessage={(input) => setText(input)}
         onInputImage={(base64) => setImage(base64)}
         onChat={handleChat}
+        onClear={handleClear}
       />
     </div>
   );

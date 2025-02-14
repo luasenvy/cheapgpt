@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 
 interface SearchBarProps extends React.HTMLAttributes<HTMLDivElement> {
   onChat: (text: string) => void;
+  onClear: () => void;
   onInputMessage: (text: string) => void;
   onInputImage: (base64?: string) => void;
   text: string;
@@ -25,6 +26,7 @@ export const SearchBar = forwardRef(function (
   {
     className,
     onChat: handleChat,
+    onClear: handleClear,
     onInputMessage: handleInputMessage,
     onInputImage: handleInputImage,
     text,
@@ -100,7 +102,11 @@ export const SearchBar = forwardRef(function (
         disabled={disabled || talking}
         value={text}
         onKeyDown={(e) => {
-          if ("Enter" === e.key && !e.shiftKey) {
+          if ("L" === e.key && e.ctrlKey && e.shiftKey) {
+            e.preventDefault();
+            handleClear();
+            inputRef.current?.focus();
+          } else if ("Enter" === e.key && !e.shiftKey) {
             e.preventDefault();
             handleChat(text);
           }
