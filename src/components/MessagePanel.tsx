@@ -7,7 +7,6 @@ import { Fragment, forwardRef, useEffect, useImperativeHandle, useRef } from "re
 import Markdown from "react-markdown";
 
 import rehypeHighlight from "rehype-highlight";
-import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 
 import { cn } from "@/lib/utils";
@@ -97,7 +96,7 @@ export const MessagePanel = forwardRef(function (
             <Markdown
               urlTransform={(url) => url}
               remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeHighlight, rehypeKatex]}
+              rehypePlugins={[rehypeHighlight]}
               className={cn(`prose max-w-full break-words`, {
                 [userBalloon]: "user" === role,
                 "mt-2 w-full": "assistant" === role,
