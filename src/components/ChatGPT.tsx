@@ -319,6 +319,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
         onInputImage={(base64) => setImage(base64)}
         onChat={handleChat}
         onClear={handleClear}
+        onSummary={handleClickSendCurrentPage}
       />
     </div>
   );
