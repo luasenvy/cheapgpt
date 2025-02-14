@@ -78,7 +78,6 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     setStatus(statusEnum.think);
 
     const language = "auto" === sumLng ? `primary language of content` : `${sumLng} language`;
-
     const summaryPrompt = `Provide a list summarizing into 3 key points, each in less single sentence, each sentence has bold title, presented as ${language}.`;
 
     const stream = await openaiRef.current!.chat.completions.create({
@@ -123,7 +122,14 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   };
 
   const appendMessage = ({ text, image }: { text: string; image?: string }) => {
-    const context = messagesRef.current.slice(1).slice(-6);
+    let context = messagesRef.current.slice(1).slice(-6);
+
+    for (let i = 0; i < context.length; i++) {
+      if (context[i].role === "user" && context[i].content === "Summary Contents") {
+        context = context.toSpliced(i, 2);
+        break;
+      }
+    }
 
     const message: ChatCompletionMessageParam = { role: "user", content: text };
 
