@@ -69,11 +69,15 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       setMessagesCount((prev) => prev + 1);
     }
 
-    if (!virtual) await chrome.storage.sync.set({ messages: messagesRef.current });
+    // first element is default message
+    if (!virtual) await chrome.storage.sync.set({ messages: messagesRef.current.slice(1) });
   };
 
   const getSummaryPage = async ({ model, content }: { model: Model; content: string }) => {
     setStatus(statusEnum.think);
+
+    const summaryPrompt =
+      "Provide a list summarizing the content into 3 key points, each captured in less two sentences, each item start with bold title, and presented in the same language as content.";
 
     const stream = await openaiRef.current!.chat.completions.create({
       model,
@@ -81,14 +85,8 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
         {
           role: "user",
           content: [
-            {
-              type: "text",
-              text: "Provide a list summarizing the content into 5 key points, each captured in a one or two three sentence, and presented in the same language as the original content.",
-            },
-            {
-              type: "text",
-              text: content,
-            },
+            { type: "text", text: summaryPrompt },
+            { type: "text", text: content },
           ],
         },
       ],
@@ -123,7 +121,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   };
 
   const appendMessage = ({ text, image }: { text: string; image?: string }) => {
-    const context = messagesRef.current.slice(1, messagesRef.current.length);
+    const context = messagesRef.current.slice(1).slice(-6);
 
     const message: ChatCompletionMessageParam = { role: "user", content: text };
 
@@ -165,7 +163,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       setApiKey(apiKey);
       setModel(model);
 
-      messagesRef.current = messages?.length ? messages : [defaultMessage];
+      messagesRef.current = [defaultMessage].concat(messages);
       setMessagesCount((prev) => prev + 1);
 
       if (apiKey) {
