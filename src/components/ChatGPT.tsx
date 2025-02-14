@@ -229,7 +229,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
 
               body
                 .querySelectorAll(
-                  "style,script,link,iframe,noscript,template,svg,img,video,canvas,object,embed,frame,frameset,button,header,footer"
+                  "style,script,link,iframe,noscript,template,svg,img,video,canvas,object,embed,frame,frameset,button,header,footer,aside,nav"
                 )
                 .forEach((el) => el.remove());
 
@@ -261,8 +261,8 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     if (status === statusEnum.idle) searchBarRef.current?.focus();
   }, [status]);
   return (
-    <div className={cn("flex h-full w-full flex-col space-y-2", className)} {...props}>
-      <div className="flex items-center p-2 pb-0">
+    <div className={cn("flex h-full w-full flex-col", className)} {...props}>
+      <div className="flex items-center p-2 shadow-md">
         {apiKey && <ModelSelect model={model} onModelSelect={setModel} className="w-30" />}
 
         <TooltipProvider>
@@ -329,7 +329,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
         ref={searchBarRef}
         disabled={!apiKey}
         talking={status === statusEnum.talk}
-        className="flex-shrink-0 p-2 pt-0"
+        className="flex-shrink-0 p-2"
         text={text}
         image={image}
         onInputMessage={(input) => setText(input)}
