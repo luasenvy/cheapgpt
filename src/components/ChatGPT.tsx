@@ -71,7 +71,13 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     }
 
     // first element is default message
-    if (!virtual) await chrome.storage.sync.set({ messages: messagesRef.current.slice(1) });
+    if (!virtual) {
+      try {
+        await chrome.storage.sync.set({ messages: messagesRef.current.slice(1) });
+      } catch {
+        /* ignore */
+      }
+    }
   };
 
   const getSummaryPage = async ({ model, content }: { model: Model; content: string }) => {
