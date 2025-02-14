@@ -77,7 +77,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     setStatus(statusEnum.think);
 
     const summaryPrompt =
-      "Provide a list summarizing the content into 3 key points, each captured in less two sentences, each item start with bold title, and presented in the same language as content.";
+      "Provide a list summarizing the content into 3 key points, each captured in less two sentences, each item start with bold title, and presented in the main language as content.";
 
     const stream = await openaiRef.current!.chat.completions.create({
       model,
