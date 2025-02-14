@@ -64,7 +64,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
         messagesRef.current[lastIndex].content = lastContent + (choices[0].delta.content || "");
       } else if (usage) {
         messagesRef.current[lastIndex].content =
-          lastContent + `\n\n*Total ${usage.total_tokens} Tokens*`;
+          lastContent + `\n\n> Total ${usage.total_tokens} Tokens`;
       }
 
       setMessagesCount((prev) => prev + 1);
