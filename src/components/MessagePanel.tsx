@@ -32,7 +32,6 @@ function renderMessage(content: ChatCompletionMessageParam["content"]) {
       .filter(Boolean)
       .join("\n");
 
-    console.info(markdown);
     return markdown;
   }
 
