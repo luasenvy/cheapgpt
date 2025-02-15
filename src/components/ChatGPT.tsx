@@ -264,61 +264,62 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   }, [status]);
   return (
     <div className={cn("flex h-full w-full flex-col", className)} {...props}>
-      <div className="flex items-center p-2 shadow-md">
-        {apiKey && <ModelSelect model={model} onModelSelect={setModel} className="w-30" />}
+      {apiKey && (
+        <div className="flex items-center p-2 shadow-md">
+          <ModelSelect model={model} onModelSelect={setModel} className="w-30" />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger className="ml-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="size-7 rounded-full border-primary p-0 hover:bg-primary hover:text-white"
+                  onClick={handleClickSendCurrentPage}
+                >
+                  <TextSelect />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Summary Page</p>
+              </TooltipContent>
+            </Tooltip>
 
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger className="ml-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="size-7 rounded-full border-primary p-0 hover:bg-primary hover:text-white"
-                onClick={handleClickSendCurrentPage}
-              >
-                <TextSelect />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Summary Page</p>
-            </TooltipContent>
-          </Tooltip>
+            <Tooltip>
+              <TooltipTrigger className="ml-auto">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="size-7 rounded-full p-0 hover:bg-orange-600 hover:text-white"
+                  onClick={handleClickClearMessages}
+                >
+                  <Eraser />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Clear Messages</p>
+              </TooltipContent>
+            </Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger className="ml-auto">
-              <Button
-                variant="secondary"
-                size="sm"
-                className="size-7 rounded-full p-0 hover:bg-orange-600 hover:text-white"
-                onClick={handleClickClearMessages}
-              >
-                <Eraser />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Clear Messages</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger className="ml-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="ml-auto size-7 rounded-full p-0"
-                asChild
-              >
-                <a href="https://platform.openai.com/settings/organization/usage" target="_blank">
-                  <Gauge />
-                </a>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Open AI API Usage</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
+            <Tooltip>
+              <TooltipTrigger className="ml-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-auto size-7 rounded-full p-0"
+                  asChild
+                >
+                  <a href="https://platform.openai.com/settings/organization/usage" target="_blank">
+                    <Gauge />
+                  </a>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Open AI API Usage</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      )}
 
       <MessagePanel
         ref={messagePanelRef}
@@ -327,19 +328,21 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
         thinking={status === statusEnum.think}
       />
 
-      <SearchBar
-        ref={searchBarRef}
-        disabled={!apiKey}
-        talking={status === statusEnum.talk}
-        className="flex-shrink-0 p-2"
-        text={text}
-        image={image}
-        onInputMessage={(input) => setText(input)}
-        onInputImage={(base64) => setImage(base64)}
-        onChat={handleChat}
-        onClear={handleClear}
-        onSummary={handleClickSendCurrentPage}
-      />
+      {apiKey && (
+        <SearchBar
+          ref={searchBarRef}
+          disabled={!apiKey}
+          talking={status === statusEnum.talk}
+          className="flex-shrink-0 p-2"
+          text={text}
+          image={image}
+          onInputMessage={(input) => setText(input)}
+          onInputImage={(base64) => setImage(base64)}
+          onChat={handleChat}
+          onClear={handleClear}
+          onSummary={handleClickSendCurrentPage}
+        />
+      )}
     </div>
   );
 }
