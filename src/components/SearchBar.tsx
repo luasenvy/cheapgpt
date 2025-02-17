@@ -72,6 +72,8 @@ export const SearchBar = forwardRef(function (
 
     inputRef.current.addEventListener("paste", handleClipboardImage);
 
+    inputRef.current?.focus();
+
     return () => {
       inputRef.current?.removeEventListener("paste", handleClipboardImage);
     };

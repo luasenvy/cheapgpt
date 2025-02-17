@@ -197,11 +197,6 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
           apiKey,
           dangerouslyAllowBrowser: true,
         });
-
-        setTimeout(() => {
-          messagePanelRef.current?.toBottom();
-          searchBarRef.current?.focus();
-        });
       } else {
         messagesRef.current = [
           {

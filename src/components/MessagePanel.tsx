@@ -70,6 +70,8 @@ export const MessagePanel = forwardRef(function (
       characterData: true,
     });
 
+    ulRef.current?.scrollTo(0, ulRef.current.scrollHeight);
+
     return () => {
       mutationObserver.disconnect();
     };
