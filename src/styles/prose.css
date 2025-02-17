@@ -31,6 +31,12 @@
     @apply bg-gradient-to-r from-[#d247bf] to-primary text-transparent bg-clip-text decoration-clone;
   }
 
+  pre {
+    &> code:not(.hljs) {
+      @apply border-0;
+    }
+  }
+
   code:not(.hljs) {
     @apply font-mono mx-0.5 px-1.5 py-0.5 rounded-sm border;
 
