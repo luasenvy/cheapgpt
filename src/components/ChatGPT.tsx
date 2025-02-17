@@ -203,8 +203,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
             role: "assistant",
             content: `**Please configure your OpenAI API first.** 🫠
 
-> Right click on the extension icon and select "Options". 🛠️
-            `,
+> Right click on the extension icon and select "Options". 🛠️`,
           },
         ];
         setMessagesCount((prev) => prev + 1);
