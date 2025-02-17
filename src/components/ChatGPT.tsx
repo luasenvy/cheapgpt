@@ -42,6 +42,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
 
   const [text, setText] = useState<string>("");
   const [image, setImage] = useState<string>();
+  const [context, setContext] = useState<boolean>(false);
   const [model, setModel] = useState<Model>(modelEnum["gpt-4o-mini"]);
   const [sumLng, setSumLng] = useState("auto");
 
@@ -71,7 +72,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     }
 
     // first element is default message
-    if (!virtual) {
+    if (context && !virtual) {
       try {
         await chrome.storage.sync.set({ messages: messagesRef.current.slice(1) });
       } catch {
@@ -128,11 +129,11 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   };
 
   const appendMessage = ({ text, image }: { text: string; image?: string }) => {
-    let context = messagesRef.current.slice(1).slice(-6);
+    let prevMessages = messagesRef.current.slice(1).slice(-6);
 
-    for (let i = 0; i < context.length; i++) {
-      if (context[i].role === "user" && context[i].content === "Summary Contents") {
-        context = context.toSpliced(i, 2);
+    for (let i = 0; i < prevMessages.length; i++) {
+      if (prevMessages[i].role === "user" && prevMessages[i].content === "Summary Contents") {
+        prevMessages = prevMessages.toSpliced(i, 2);
         break;
       }
     }
@@ -146,13 +147,13 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       ];
     }
 
-    const messages = context.concat(message, { role: "assistant", content: "" });
+    const messages = prevMessages.concat(message, { role: "assistant", content: "" });
     messagesRef.current = [defaultMessage].concat(messages);
     setMessagesCount((prev) => prev + 1);
     setImage(undefined);
     setText("");
 
-    return messages;
+    return context ? messages : [message];
   };
 
   const handleClear = async () => {
@@ -169,7 +170,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
 
   useEffect(() => {
     (async () => {
-      const { organization, project, apiKey, model, sumLng, messages } =
+      const { organization, project, apiKey, model, sumLng, messages, context } =
         await chrome.storage.sync.get([
           "organization",
           "project",
@@ -177,13 +178,15 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
           "model",
           "sumLng",
           "messages",
+          "context",
         ]);
 
       setApiKey(apiKey);
       setModel(model);
       setSumLng(sumLng);
+      setContext(context);
 
-      messagesRef.current = [defaultMessage].concat(messages);
+      messagesRef.current = [defaultMessage].concat(context ? messages : []);
       setMessagesCount((prev) => prev + 1);
 
       if (apiKey) {

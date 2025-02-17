@@ -1,3 +1,4 @@
+import type { CheckedState } from "@radix-ui/react-checkbox";
 import { Save } from "lucide-react";
 import type { ChatCompletionMessageParam } from "openai/resources";
 import { useEffect, useState } from "react";
@@ -7,6 +8,7 @@ import { toast } from "sonner";
 import type { Model } from "@/components/ModelSelect";
 import { model as modelEnum } from "@/components/ModelSelect";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -24,31 +26,42 @@ export function CheapGPTConfiguration() {
   const [apiKey, setApiKey] = useState<string>("");
 
   const [sumLng, setSumLng] = useState("auto");
+  const [context, setContext] = useState<CheckedState>(false);
   const [model, setModel] = useState<Model>(modelEnum["gpt-4o-mini"]);
   const [messages, setMessages] = useState<Array<ChatCompletionMessageParam>>([]);
 
   // Saves options to chrome.storage
   const handleClickSaveConfiguration = async () => {
-    await chrome.storage.sync.set({ organization, project, apiKey, model, sumLng, messages });
+    await chrome.storage.sync.set({
+      organization,
+      project,
+      apiKey,
+      model,
+      sumLng,
+      messages,
+      context,
+    });
 
     toast.success("Options saved.");
   };
 
   useEffect(() => {
     (async () => {
-      const { organization, project, apiKey, model, sumLng, messages } =
+      const { organization, project, apiKey, model, context, sumLng, messages } =
         await chrome.storage.sync.get([
           "organization",
           "project",
           "apiKey",
           "model",
           "sumLng",
+          "context",
           "messages",
         ]);
 
       setOrganization(organization ?? "");
       setProject(project ?? "");
       setApiKey(apiKey ?? "");
+      setContext(context ?? false);
       setModel(model || modelEnum["gpt-4o-mini"]);
       setSumLng(sumLng || "auto");
       setMessages(messages ?? []);
@@ -149,6 +162,16 @@ export function CheapGPTConfiguration() {
             <SelectItem value="العربية">العربية</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Label className="w-1/3 text-nowrap" htmlFor="context">
+          Maintain Context
+        </Label>
+
+        <div className="my-1 w-full">
+          <Checkbox id="context" checked={context} onCheckedChange={setContext} />
+        </div>
       </div>
 
       <Button
