@@ -3,7 +3,7 @@ import "@/styles/prose.css";
 
 import { BotMessageSquare, Disc3 } from "lucide-react";
 import type { ChatCompletionMessageParam } from "openai/resources";
-import { Fragment, forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import Markdown from "react-markdown";
 
 import rehypeHighlight from "rehype-highlight";
@@ -38,21 +38,20 @@ function renderMessage(content: ChatCompletionMessageParam["content"]) {
   return null;
 }
 
-export interface MessagePanelRef {
-  toBottom: () => void;
-}
-
-export const MessagePanel = forwardRef(function (
-  { messages, className, thinking, ...props }: MessagePanelProps,
-  ref: React.Ref<MessagePanelRef>
-) {
+export const MessagePanel = function ({
+  messages,
+  className,
+  thinking,
+  ...props
+}: MessagePanelProps) {
   const ulRef = useRef<HTMLUListElement>(null);
-  useImperativeHandle(ref, () => ({
-    toBottom: () => ulRef.current?.scrollTo(0, ulRef.current.scrollHeight),
-  }));
 
   const others = messages.slice(0, -1);
   const lastMessage = messages[messages.length - 1];
+
+  useEffect(() => {
+    ulRef.current?.scrollTo(0, ulRef.current.scrollHeight);
+  }, [messages]);
 
   useEffect(() => {
     if (!ulRef.current) return;
@@ -69,8 +68,6 @@ export const MessagePanel = forwardRef(function (
       subtree: true,
       characterData: true,
     });
-
-    ulRef.current?.scrollTo(0, ulRef.current.scrollHeight);
 
     return () => {
       mutationObserver.disconnect();
@@ -139,4 +136,4 @@ export const MessagePanel = forwardRef(function (
       </li>
     </ul>
   );
-});
+};

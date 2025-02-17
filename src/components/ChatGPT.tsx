@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 
 import { toast } from "sonner";
 
-import type { MessagePanelRef } from "@/components/MessagePanel";
 import { MessagePanel } from "@/components/MessagePanel";
 import type { Model } from "@/components/ModelSelect";
 import { model as modelEnum } from "@/components/ModelSelect";
@@ -39,7 +38,6 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   const messagesRef = useRef<Array<ChatCompletionMessageParam>>([defaultMessage]);
   const [, setMessagesCount] = useState<number>(0);
   const openaiRef = useRef<OpenAI | null>(null);
-  const messagePanelRef = useRef<MessagePanelRef>(null);
   const searchBarRef = useRef<SearchBarRef>(null);
 
   const [text, setText] = useState<string>("");
@@ -153,8 +151,6 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     setMessagesCount((prev) => prev + 1);
     setImage(undefined);
     setText("");
-
-    setTimeout(() => messagePanelRef.current?.toBottom());
 
     return messages;
   };
@@ -317,7 +313,6 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       )}
 
       <MessagePanel
-        ref={messagePanelRef}
         messages={messagesRef.current}
         className="h-full overflow-auto p-2 text-sm"
         thinking={status === statusEnum.think}
