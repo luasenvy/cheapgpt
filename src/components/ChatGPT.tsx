@@ -262,6 +262,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   useEffect(() => {
     if (status === statusEnum.idle) searchBarRef.current?.focus();
   }, [status]);
+
   return (
     <div className={cn("flex h-full w-full flex-col", className)} {...props}>
       {apiKey && (
