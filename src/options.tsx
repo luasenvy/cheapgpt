@@ -6,6 +6,12 @@ import ReactDOM from "react-dom/client";
 import { CheapGPTAbout } from "@/components/CheapGPTAbout";
 import { CheapGPTConfiguration } from "@/components/CheapGPTConfiguration";
 import { CheapGPTShortcut } from "@/components/CheapGPTShortcut";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Toaster } from "@/components/ui/sonner";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
@@ -16,15 +22,39 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       </header>
 
       <main className="flex-grow">
-        <CheapGPTConfiguration />
+        <Accordion type="multiple" className="mt-4 w-full" defaultValue={["configurations"]}>
+          <AccordionItem value="configurations">
+            <AccordionTrigger>
+              <h2 className="text-lg font-semibold">Configurations</h2>
+            </AccordionTrigger>
+            <AccordionContent>
+              <CheapGPTConfiguration />
+            </AccordionContent>
+          </AccordionItem>
 
-        <div className="my-8 h-[1px] bg-gradient-to-r from-[#D247BF] to-primary"></div>
+          <AccordionItem value="shortcuts">
+            <AccordionTrigger>
+              <h2 className="text-lg font-semibold">Keyboard Shortcuts</h2>
+            </AccordionTrigger>
+            <AccordionContent>
+              <CheapGPTShortcut />
+            </AccordionContent>
+          </AccordionItem>
 
-        <CheapGPTShortcut />
-
-        <div className="my-8 h-[1px] bg-gradient-to-r from-[#D247BF] to-primary"></div>
-
-        <CheapGPTAbout />
+          <AccordionItem value="cheapgpt">
+            <AccordionTrigger>
+              <h2 className="text-lg font-semibold">
+                <span className="bg-gradient-to-r from-[#D247BF] to-primary bg-clip-text text-transparent">
+                  Thank You
+                </span>{" "}
+                for Using CheapGPT
+              </h2>
+            </AccordionTrigger>
+            <AccordionContent>
+              <CheapGPTAbout />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </main>
 
       <Toaster />

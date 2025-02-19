@@ -11,8 +11,6 @@ import {
 export function CheapGPTShortcut() {
   return (
     <div className="flex flex-col space-y-4">
-      <h2 className="text-lg font-semibold">Keyboard Shortcuts</h2>
-
       <Table>
         <TableCaption>A list of keyboard shortcuts.</TableCaption>
         <TableHeader>

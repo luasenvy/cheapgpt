@@ -1,12 +1,7 @@
 export function CheapGPTAbout() {
   return (
     <div className="flex flex-col space-y-4">
-      <h2 className="text-lg font-semibold">
-        <span className="bg-gradient-to-r from-[#D247BF] to-primary bg-clip-text text-transparent">
-          Thank You
-        </span>{" "}
-        for Using CheapGPT
-      </h2>
+      <div className="h-[2px] bg-gradient-to-r from-[#D247BF] to-primary"></div>
 
       <p className="text-base">
         CheapGPT grows with your interest. If you need more detailed information, please check{" "}

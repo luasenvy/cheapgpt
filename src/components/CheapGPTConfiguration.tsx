@@ -1,5 +1,5 @@
 import type { CheckedState } from "@radix-ui/react-checkbox";
-import { Save } from "lucide-react";
+import { CircleHelp, Save } from "lucide-react";
 import type { ChatCompletionMessageParam } from "openai/resources";
 import { useEffect, useState } from "react";
 
@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function CheapGPTConfiguration() {
   const [organization, setOrganization] = useState<string>("");
@@ -70,8 +71,6 @@ export function CheapGPTConfiguration() {
 
   return (
     <div className="flex flex-col space-y-4">
-      <h2 className="text-lg font-semibold">Configurations</h2>
-
       <div className="flex items-center space-x-4">
         <Label
           className="w-1/3 text-nowrap text-right font-semibold"
@@ -171,8 +170,19 @@ export function CheapGPTConfiguration() {
       </div>
 
       <div className="flex items-center space-x-4">
-        <Label className="w-1/3 text-nowrap text-right" htmlFor="context">
+        <Label className="flex w-1/3 items-center justify-end gap-2 text-nowrap" htmlFor="context">
           Maintain Context
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <CircleHelp className="size-3 cursor-help text-blue-800" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>The context will only retain the previous 6 conversations.</p>
+                <p>Image generation and page summary history are excluded</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </Label>
 
         <div className="my-1 w-full">
@@ -196,7 +206,7 @@ export function CheapGPTConfiguration() {
         </div>
       </div>
 
-      <p className="text-right text-xs">CheapGPT v1.3.1</p>
+      <p className="text-right text-xs">CheapGPT v1.3.2</p>
     </div>
   );
 }
