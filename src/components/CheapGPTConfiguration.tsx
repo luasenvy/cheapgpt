@@ -1,5 +1,5 @@
 import type { CheckedState } from "@radix-ui/react-checkbox";
-import { CircleHelp, Save } from "lucide-react";
+import { Save, TriangleAlert } from "lucide-react";
 import type { ChatCompletionMessageParam } from "openai/resources";
 import { useEffect, useState } from "react";
 
@@ -175,11 +175,13 @@ export function CheapGPTConfiguration() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <CircleHelp className="size-3 cursor-help text-blue-800" />
+                <TriangleAlert className="size-3 cursor-help text-blue-800" />
               </TooltipTrigger>
               <TooltipContent>
-                <p>The context will only retain the previous 6 conversations.</p>
-                <p>Image generation and page summary history are excluded</p>
+                <p>The context will retain the previous 6 conversations.</p>
+                <p>
+                  It is means <strong>spend more costs.</strong>
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
