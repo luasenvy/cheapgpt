@@ -122,7 +122,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     }
 
     // first element is default message
-    if (context && !virtual) {
+    if (!virtual) {
       try {
         await chrome.storage.sync.set({ messages: messagesRef.current.slice(1) });
       } catch {
@@ -301,7 +301,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
       setSumLng(sumLng);
       setContext(context);
 
-      messagesRef.current = [defaultMessage].concat(context ? messages : []);
+      messagesRef.current = [defaultMessage].concat(messages ?? []);
       setMessagesCount((prev) => prev + 1);
 
       if (apiKey) {
