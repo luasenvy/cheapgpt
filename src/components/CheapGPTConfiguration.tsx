@@ -205,8 +205,6 @@ export function CheapGPTConfiguration() {
           </Button>
         </div>
       </div>
-
-      <p className="text-right text-xs">CheapGPT v1.3.2</p>
     </div>
   );
 }

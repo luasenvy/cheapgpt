@@ -55,6 +55,8 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             </AccordionContent>
           </AccordionItem>
         </Accordion>
+
+        <p className="mt-8 text-right text-xs">CheapGPT v1.3.2</p>
       </main>
 
       <Toaster />
