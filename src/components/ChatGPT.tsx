@@ -442,7 +442,18 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button type="button" onClick={handleClickGenerateImage}>
+                      <Button
+                        type="button"
+                        onClick={handleClickGenerateImage}
+                        disabled={
+                          !Boolean(selectedDalleModel) ||
+                          !Boolean(selectedDalleSize) ||
+                          !Object.values(
+                            selectedDalleModel === dalleModel["DALL·E 2"] ? dalle2Size : dalle3Size
+                          ).includes(selectedDalleSize) ||
+                          !Boolean(dallePrompt)
+                        }
+                      >
                         Generate Image
                       </Button>
                     </DialogFooter>

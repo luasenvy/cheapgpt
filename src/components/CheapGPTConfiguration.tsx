@@ -72,8 +72,12 @@ export function CheapGPTConfiguration() {
     <div className="flex flex-col space-y-4">
       <h2 className="text-lg font-semibold">Configurations</h2>
 
-      <div className="flex items-center space-x-2">
-        <Label className="w-1/3 text-nowrap font-semibold" htmlFor="api-key" title="required">
+      <div className="flex items-center space-x-4">
+        <Label
+          className="w-1/3 text-nowrap text-right font-semibold"
+          htmlFor="api-key"
+          title="required"
+        >
           API Key<span className="text-lg text-primary">*</span>
         </Label>
         <Textarea
@@ -86,8 +90,8 @@ export function CheapGPTConfiguration() {
         />
       </div>
 
-      <div className="flex items-center space-x-2">
-        <Label className="w-1/3 text-nowrap" htmlFor="org-id">
+      <div className="flex items-center space-x-4">
+        <Label className="w-1/3 text-nowrap text-right" htmlFor="org-id">
           Organization ID
         </Label>
         <Input
@@ -98,8 +102,8 @@ export function CheapGPTConfiguration() {
         />
       </div>
 
-      <div className="flex items-center space-x-2">
-        <Label className="w-1/3 text-nowrap" htmlFor="prj-id">
+      <div className="flex items-center space-x-4">
+        <Label className="w-1/3 text-nowrap text-right" htmlFor="prj-id">
           Project ID
         </Label>
         <Input
@@ -110,8 +114,8 @@ export function CheapGPTConfiguration() {
         />
       </div>
 
-      <div className="flex items-center space-x-2">
-        <Label className="w-1/3 text-nowrap" htmlFor="model">
+      <div className="flex items-center space-x-4">
+        <Label className="w-1/3 text-nowrap text-right" htmlFor="model">
           Default Model
         </Label>
         <Select value={model} onValueChange={(value) => setModel(value as Model)}>
@@ -128,8 +132,8 @@ export function CheapGPTConfiguration() {
         </Select>
       </div>
 
-      <div className="flex items-center space-x-2">
-        <Label className="w-1/3 text-nowrap" htmlFor="model">
+      <div className="flex items-center space-x-4">
+        <Label className="w-1/3 text-nowrap text-right" htmlFor="model">
           Summary Language
         </Label>
         <Select value={sumLng} onValueChange={setSumLng}>
@@ -166,8 +170,8 @@ export function CheapGPTConfiguration() {
         </Select>
       </div>
 
-      <div className="flex items-center space-x-2">
-        <Label className="w-1/3 text-nowrap" htmlFor="context">
+      <div className="flex items-center space-x-4">
+        <Label className="w-1/3 text-nowrap text-right" htmlFor="context">
           Maintain Context
         </Label>
 
@@ -176,15 +180,23 @@ export function CheapGPTConfiguration() {
         </div>
       </div>
 
-      <Button
-        className="ml-auto border-primary text-primary hover:bg-primary hover:text-white"
-        variant="outline"
-        size="icon"
-        onClick={handleClickSaveConfiguration}
-        disabled={!apiKey}
-      >
-        <Save />
-      </Button>
+      <div className="flex items-center space-x-4">
+        <Label className="w-1/3 text-nowrap text-right"></Label>
+
+        <div className="my-1 w-full">
+          <Button
+            className="w-full border-primary text-primary hover:bg-primary hover:text-white"
+            variant="outline"
+            size="sm"
+            onClick={handleClickSaveConfiguration}
+            disabled={!apiKey}
+          >
+            <Save /> Save
+          </Button>
+        </div>
+      </div>
+
+      <p className="text-right text-xs">CheapGPT v1.3.1</p>
     </div>
   );
 }
