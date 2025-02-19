@@ -70,6 +70,8 @@ export function CheapGPTConfiguration() {
 
   return (
     <div className="flex flex-col space-y-4">
+      <h2 className="text-lg font-semibold">Configurations</h2>
+
       <div className="flex items-center space-x-2">
         <Label className="w-1/3 text-nowrap font-semibold" htmlFor="api-key" title="required">
           API Key<span className="text-lg text-primary">*</span>

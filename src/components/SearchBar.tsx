@@ -11,6 +11,7 @@ interface SearchBarProps extends React.HTMLAttributes<HTMLDivElement> {
   onChat: (text: string) => void;
   onClear: () => void;
   onSummary: () => void;
+  onGenerateImage: () => void;
   onInputMessage: (text: string) => void;
   onInputImage: (base64?: string) => void;
   text: string;
@@ -29,6 +30,7 @@ export const SearchBar = forwardRef(function (
     onChat: handleChat,
     onClear: handleClear,
     onSummary: handleSummary,
+    onGenerateImage: handleGenerateImage,
     onInputMessage: handleInputMessage,
     onInputImage: handleInputImage,
     text,
@@ -113,6 +115,9 @@ export const SearchBar = forwardRef(function (
           } else if ("F" === e.key && e.ctrlKey && e.shiftKey) {
             e.preventDefault();
             handleSummary();
+          } else if ("Y" === e.key && e.ctrlKey && e.shiftKey) {
+            e.preventDefault();
+            handleGenerateImage();
           } else if ("Enter" === e.key && !e.shiftKey) {
             e.preventDefault();
             handleChat(text);

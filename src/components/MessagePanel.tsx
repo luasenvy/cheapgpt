@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 interface MessagePanelProps extends React.HTMLAttributes<HTMLUListElement> {
   messages: Array<ChatCompletionMessageParam>;
   thinking: boolean;
+  drawing: boolean;
 }
 
 const userBalloon =
@@ -38,10 +39,11 @@ function renderMessage(content: ChatCompletionMessageParam["content"]) {
   return null;
 }
 
-export const MessagePanel = function ({
+export function MessagePanel({
   messages,
   className,
   thinking,
+  drawing,
   ...props
 }: MessagePanelProps) {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -114,11 +116,11 @@ export const MessagePanel = function ({
           </div>
         )}
 
-        {thinking ? (
+        {thinking || drawing ? (
           <div className="flex items-center justify-center gap-2">
             <Disc3 className="size-5 animate-spin text-primary" />
             <p className="bg-gradient-to-r from-[#D247BF] to-primary bg-clip-text text-transparent">
-              thinking ...
+              {thinking ? "thinking..." : "drawing..."}
             </p>
           </div>
         ) : (
@@ -136,4 +138,4 @@ export const MessagePanel = function ({
       </li>
     </ul>
   );
-};
+}
