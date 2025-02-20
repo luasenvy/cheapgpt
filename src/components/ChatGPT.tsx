@@ -22,6 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -30,7 +31,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
@@ -77,7 +77,7 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   const [status, setStatus] = useState<Status>(statusEnum.idle);
   const [apiKey, setApiKey] = useState<string>("");
 
-  const dallePromptRef = useRef<HTMLTextAreaElement>(null);
+  const dallePromptRef = useRef<HTMLInputElement>(null);
   const messagesRef = useRef<Array<ChatCompletionMessageParam>>([defaultMessage]);
   const [, setMessagesCount] = useState<number>(0);
   const openaiRef = useRef<OpenAI | null>(null);
@@ -431,10 +431,16 @@ export function ChatGPT({ className, ...props }: React.HTMLAttributes<HTMLDivEle
                         <Label htmlFor="prompt" className="text-right text-sm">
                           Prompt
                         </Label>
-                        <Textarea
+                        <Input
                           ref={dallePromptRef}
                           id="prompt"
                           value={dallePrompt}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.stopPropagation();
+                              handleClickGenerateImage();
+                            }
+                          }}
                           onInput={(e) => setDallePrompt(e.currentTarget.value)}
                           placeholder="a white siamese cat"
                           className="col-span-4 resize-none text-sm"
